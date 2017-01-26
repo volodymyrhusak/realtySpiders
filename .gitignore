@@ -11,5 +11,9 @@ __pycache__/
 *.deb
 doc/_build/
 *.xlsx
+*.xlsx#
+*.pdf
+*.csv
+*.html
 test
 tets.py
