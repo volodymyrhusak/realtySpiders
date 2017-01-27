@@ -106,6 +106,7 @@ class RealtyspidersItem(scrapy.Item):
     Image14 = scrapy.Field(default='N/A')
     Image15 = scrapy.Field(default='N/A')
     BuilderLogo = scrapy.Field(default='N/A')
+    url = scrapy.Field(default='N/A')
 
     def __getitem__(self, key):
         try:

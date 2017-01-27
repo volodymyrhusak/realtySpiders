@@ -10,9 +10,10 @@
 #     http://scrapy.readthedocs.org/en/latest/topics/spider-middleware.html
 
 BOT_NAME = 'realtySpiders'
-
+# DUPEFILTER_CLASS = 'scrapy.dupefilter.BaseDupeFilter'
 SPIDER_MODULES = ['realtySpiders.spiders']
 NEWSPIDER_MODULE = 'realtySpiders.spiders'
+# LOG_ENABLED = False
 FEED_EXPORT_FIELDS = ['BuildType', 'BuilderName', 'State', 'Region', 'DesignName',
                       'BuildFinishRange', 'BasePrice', 'Squares', 'HouseWidth',
                       'HouseLength', 'Lot_BlockWidth', 'LandSize', 'SturturalWarranty',
@@ -32,7 +33,7 @@ FEED_EXPORT_FIELDS = ['BuildType', 'BuilderName', 'State', 'Region', 'DesignName
                       'HomeDesignMainImage', 'FloorPlanImage1', 'FloorPlanImage2', 'BrochureImage_pdf',
                       'InclusionsImage_pdf', 'Image1', 'Image2', 'Image3', 'Image4', 'Image5', 'Image6', 'Image7',
                       'Image8', 'Image9', 'Image10', 'Image11', 'Image12', 'Image13', 'Image14', 'Image15',
-                      'BuilderLogo']
+                      'BuilderLogo','url']
 FEED_STORE_EMPTY = True
 # Crawl responsibly by identifying yourself (and your website) on the user-agent
 # USER_AGENT = 'realtySpiders (+http://www.yourdomain.com)'
