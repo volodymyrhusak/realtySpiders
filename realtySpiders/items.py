@@ -8,7 +8,6 @@
 import scrapy
 
 
-
 class RealtyspidersItem(scrapy.Item):
     BuildType = scrapy.Field(default='N/A')
     BuilderName = scrapy.Field(default='N/A')
@@ -29,17 +28,17 @@ class RealtyspidersItem(scrapy.Item):
     Bathrooms = scrapy.Field(default='N/A')
     Garage = scrapy.Field(default='N/A')
     LivingArea = scrapy.Field(default='N/A')
-    TheatreRoom_Yes_No = scrapy.Field(default='N/A')
-    SeparateMeals_Yes_No = scrapy.Field(default='N/A')
-    Alfresco_Yes_No = scrapy.Field(default='N/A')
-    Study_Yes_No = scrapy.Field(default='N/A')
-    WalkinPantry_Yes_No = scrapy.Field(default='N/A')
-    BultersPantry_Yes_No = scrapy.Field(default='N/A')
-    Void_Yes_No = scrapy.Field(default='N/A')
-    His_HerWIR_Yes_No = scrapy.Field(default='N/A')
-    BedroomGrFloor_Yes_No = scrapy.Field(default='N/A')
-    SteelStructure_Yes_No = scrapy.Field(default='N/A')
-    Balcony_Yes_No = scrapy.Field(default='N/A')
+    TheatreRoom_Yes_No = scrapy.Field(default=None)
+    SeparateMeals_Yes_No = scrapy.Field(default=None)
+    Alfresco_Yes_No = scrapy.Field(default=None)
+    Study_Yes_No = scrapy.Field(default=None)
+    WalkinPantry_Yes_No = scrapy.Field(default=None)
+    BultersPantry_Yes_No = scrapy.Field(default=None)
+    Void_Yes_No = scrapy.Field(default=None)
+    His_HerWIR_Yes_No = scrapy.Field(default=None)
+    BedroomGrFloor_Yes_No = scrapy.Field(default=None)
+    SteelStructure_Yes_No = scrapy.Field(default=None)
+    Balcony_Yes_No = scrapy.Field(default=None)
     LoungeDimension = scrapy.Field(default='N/A')
     FamilyDimension = scrapy.Field(default='N/A')
     Meals_DiningDimension = scrapy.Field(default='N/A')
@@ -116,5 +115,3 @@ class RealtyspidersItem(scrapy.Item):
             if 'default' in field:
                 return field['default']
             raise
-
-
