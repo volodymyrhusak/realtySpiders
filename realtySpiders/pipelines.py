@@ -3,7 +3,7 @@ import csv
 import os
 # from six import string_types
 # from scrapy import signals
-from realtySpiders.settings import FEED_EXPORT_FIELDS, FEED_URI
+from realtySpiders.settings import FEED_EXPORT_FIELDS
 # from scrapy.xlib.pydispatch import dispatcher
 from scrapy.exporters import CsvItemExporter
 
@@ -24,32 +24,39 @@ class HeadlessCsvItemExporter(CsvItemExporter):
         super(HeadlessCsvItemExporter, self).__init__(*args, **kwargs)
 
 
+headers_not_written = True
+
+
 class RealtyspidersPipeline(object):
     def __init__(self, **kwargs):
-        self.file = open(os.path.abspath(FEED_URI), 'a')
+        self.file = open(os.path.abspath('Result.csv'), 'a')
         self.writer = csv.DictWriter(self.file, FEED_EXPORT_FIELDS)
         include_headers_line = False
-        # self._headers_not_written = True
+
         # self._writeHeaders()
         self._runSpiders = []
 
-        # self.writer.writerow(FEED_EXPORT_FIELDS)
-
     # def _writeHeaders(self):
-    #     if self._headers_not_written:
-    #         self._headers_not_written = False
+    #     global headers_not_written
+    #     if headers_not_written:
+    #         headers_not_written = False
     #         self.writer.writeheader()
 
     def process_item(self, item, spider):
         item = self._getYesNo(item)
+        for i, v in item.items():
+            item[i] = self._cleanItem(v)
         self.writer.writerow(item)
         return item
 
     def open_spider(self, spider):
         self._runSpiders.append(spider)
 
-    def close_spider(self, spider):
-        self.file.close()
+    # def close_spider(self, spider):
+    #     self.file.close()
+
+    def _cleanItem(self, item):
+        return item.strip()
 
     def _getYesNo(self, item):
         if item['TheatreRoom_Yes_No']:

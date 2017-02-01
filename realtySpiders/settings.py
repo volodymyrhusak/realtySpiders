@@ -33,14 +33,14 @@ FEED_EXPORT_FIELDS = ['BuildType', 'BuilderName', 'State', 'Region', 'DesignName
                       'HomeDesignMainImage', 'FloorPlanImage1', 'FloorPlanImage2', 'BrochureImage_pdf',
                       'InclusionsImage_pdf', 'Image1', 'Image2', 'Image3', 'Image4', 'Image5', 'Image6', 'Image7',
                       'Image8', 'Image9', 'Image10', 'Image11', 'Image12', 'Image13', 'Image14', 'Image15',
-                      'BuilderLogo','url']
+                      'BuilderLogo', 'url']
 
 # FEED_STORE_EMPTY = True
 # Crawl responsibly by identifying yourself (and your website) on the user-agent
 # USER_AGENT = 'realtySpiders (+http://www.yourdomain.com)'
 
-FEED_FORMAT = 'csv'
-FEED_URI = 'Result.csv'
+# FEED_FORMAT = 'csv'
+# FEED_URI = 'Result.csv'
 
 # Obey robots.txt rules
 ROBOTSTXT_OBEY = False
@@ -89,10 +89,10 @@ ROBOTSTXT_OBEY = False
 # Configure item pipelines
 # See http://scrapy.readthedocs.org/en/latest/topics/item-pipeline.html
 ITEM_PIPELINES = {
-   'realtySpiders.pipelines.RealtyspidersPipeline': 300,
+    'realtySpiders.pipelines.RealtyspidersPipeline': 1,
 }
 FEED_EXPORTERS = {
-'csv': 'realtySpiders.pipelines.HeadlessCsvItemExporter'
+    'csv': 'realtySpiders.pipelines.HeadlessCsvItemExporter'
 }
 
 # Enable and configure the AutoThrottle extension (disabled by default)
