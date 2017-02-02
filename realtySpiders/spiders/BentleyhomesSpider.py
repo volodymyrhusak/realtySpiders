@@ -2,7 +2,6 @@ import re
 from scrapy.spiders import Rule, CrawlSpider
 from scrapy.linkextractors import LinkExtractor
 from scrapy.linkextractors.lxmlhtml import LxmlLinkExtractor
-# from scrapy.contrib.linkextractors.sgml import SgmlLinkExtractor
 from scrapy.selector import HtmlXPathSelector
 from realtySpiders.items import RealtyspidersItem
 from scrapy.crawler import CrawlerProcess
@@ -77,7 +76,6 @@ class BentleyhomesSpider(CrawlSpider):
         #     l.add_value('HomeDesignMainImage', self.itemsList[response.url])
         # except KeyError:
         #     pass
-        l.add_value('BuilderLogo', 'Bentley Homes')
         l.add_value('BuilderLogo', 'Bentley Homes')
 
         if response.url.find('/lot') == -1:
