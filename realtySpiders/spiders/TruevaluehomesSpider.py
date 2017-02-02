@@ -1,7 +1,6 @@
 import re
 from scrapy.spiders import Rule, CrawlSpider
 from scrapy.linkextractors import LinkExtractor
-from scrapy.contrib.loader.processor import TakeFirst
 from scrapy.selector import HtmlXPathSelector
 from realtySpiders.items import RealtyspidersItem
 from scrapy.crawler import CrawlerProcess
@@ -22,11 +21,9 @@ class TruevaluehomesSpider(CrawlSpider):
     def parseList(self, response):
         referer = response.request.headers.get('Referer', None).decode("utf-8")
         hxs = HtmlXPathSelector(response)
-        print(hxs.root)
         hxsItemsList = hxs.select('//div[@id="itemListPrimary"]/div[@class="itemContainer itemContainerLast"]')
         for hxsItems in hxsItemsList:
             l = RealtyLoader(RealtyspidersItem(), hxsItems)
-            l.default_output_processor = TakeFirst()
             l.add_value('BuildType', self._getBuildType(response.url))
             l.add_value('BuilderEmailAddress', 'info@truevaluehomes.com.au')
             l.add_value('BuilderLogo', 'True Value Homes')

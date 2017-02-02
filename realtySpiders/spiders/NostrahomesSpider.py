@@ -127,7 +127,9 @@ class NostrahomesSpider(CrawlSpider):
                     '//div[@class="tablet desktop editable"]/table/tbody/tr/th[text()="Email"]/following-sibling::td/text()')
         l.add_xpath('FloorPlanImage1',
                     '//div[@class="floor-plans-wrapper"]/div/a/img/@src', **{'myRefer': referer})
-        l.add_xpath('BrochureImage_pdf', '//a[@class="pdfButton"]/@href', **{'myRefer': referer})
+        l.add_xpath('BrochureImage_pdf', '//a[text()="Download Brochure"]/@href')
+        l.add_xpath('InclusionsImage_pdf', '//a[text()="View Our Standard Inclusions List"]/@href',
+                    **{'myRefer': 'http://nostrahomes.com.au/'})
         l.add_xpath('Image1', '//*[@id="top-image"]/img/@src', **{'myRefer': referer})
         l.add_xpath('Image1', '//ul[@class="slides normalize-ul"]/li[1]/img/@src', **{'myRefer': referer})
         l.add_xpath('Image2', '//ul[@class="slides normalize-ul"]/li[2]/img/@src', **{'myRefer': referer})

@@ -4,6 +4,7 @@ from realtySpiders.spiders.FrenkenhomesSpider import FrenkenhomesSpider
 from realtySpiders.spiders.NostrahomesSpider import NostrahomesSpider
 from realtySpiders.spiders.TruevaluehomesSpider import TruevaluehomesSpider
 from realtySpiders.spiders.ZuccalahomesSpider import ZuccalahomesSpider
+from realtySpiders.spiders.BentleyhomesSpider import BentleyhomesSpider
 from scrapy.utils.project import get_project_settings
 from realtySpiders.settings import FEED_EXPORT_FIELDS
 
@@ -14,7 +15,7 @@ www.hermitagehomes.com.au +
 www.zuccalahomes.com.au +
 www.truevaluehomes.com.au +
 www.rawdonhillhomes.com.au
-www.bentleyhomes.com.au
+www.bentleyhomes.com.au -
 www.busbyhomes.com.au
 www.ashfordhomes.com.au
 www.esperancehomes.com.au
@@ -35,6 +36,7 @@ def main():
     process.crawl(ZuccalahomesSpider)
     # Second milestone
     process.crawl(TruevaluehomesSpider)
+    process.crawl(BentleyhomesSpider)
     process.start()
 
 
