@@ -26,6 +26,8 @@ class ZuccalahomesSpider(CrawlSpider):
 
     )
 
+    logo = 'Zuccala Homes'
+
     def parseItemList(self, response):
         links = LinkExtractor(allow=('http://www\.zuccalahomes\.com\.au/\?property=[\w-]+$')).extract_links(response)
         item = {}
@@ -64,7 +66,7 @@ class ZuccalahomesSpider(CrawlSpider):
         l = RealtyLoader(RealtyspidersItem(), hxs)
         l.add_value('BuildType', response.meta['BuildType'])
         l.add_value('url', response.url)
-        l.add_value('BuilderLogo', 'zuccala homes')
+        l.add_value('BuilderLogo', self.logo)
         l.add_value('State', 'VIC')
         l.add_value('Region', 'MELBOURNE')
         l.add_value('Storey', Storey)

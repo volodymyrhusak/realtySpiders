@@ -55,6 +55,7 @@ class BentleyhomesSpider(CrawlSpider):
              callback='parseItem', follow=True),
 
     )
+    logo = 'Bentley Homes'
 
     def parseItem(self, response):
         referer = response.request.headers.get('Referer', None).decode("utf-8")
@@ -76,7 +77,7 @@ class BentleyhomesSpider(CrawlSpider):
         #     l.add_value('HomeDesignMainImage', self.itemsList[response.url])
         # except KeyError:
         #     pass
-        l.add_value('BuilderLogo', 'Bentley Homes')
+        l.add_value('BuilderLogo', self.logo)
 
         if response.url.find('/lot') == -1:
             l.add_xpath('DesignName', '//h1[@class="property-detail-title"]/text()', **{'re': '^\w+\s+\d+$'})

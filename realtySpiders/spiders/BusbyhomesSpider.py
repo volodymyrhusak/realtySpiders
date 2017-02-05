@@ -25,6 +25,7 @@ class BusbyhomesSpider(CrawlSpider):
         #                        restrict_xpaths='//div[@class="block-content block-content-small-padding"]'),
         #      callback='parseItem', follow=True),
     )
+    logo ='Bentley Homes'
 
     def pasreLinks(self,response):
         referer = response.request.headers.get('Referer', None).decode("utf-8")
@@ -42,7 +43,7 @@ class BusbyhomesSpider(CrawlSpider):
         l = RealtyLoader(RealtyspidersItem(), hxs)
         l.add_value('url', response.url)
         l.add_value('BuildType',BuildType)
-        l.add_value('BuilderLogo', 'Bentley Homes')
+        l.add_value('BuilderLogo', self.logo)
         if BuildType == 'PRESTIGE HOMES':
             l.add_value('State', 'MELBOURNE')
         l.add_xpath('BuilderEmailAddress',

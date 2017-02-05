@@ -33,6 +33,8 @@ class NostrahomesSpider(CrawlSpider):
            "b'http://nostrahomes.com.au/white-hot-packages.php'": 'WHITE HOT PACKAGES'
            }
 
+    logo = 'Nostra Homes'
+
     def parse2(self, response):
         url = 'http://nostrahomes.com.au/php/ajax/refine-house.php?query%5B%5D=&query2%5B%5D=&page=13'
         return Request(url, callback=self.parseJSON)
@@ -74,7 +76,7 @@ class NostrahomesSpider(CrawlSpider):
         l = RealtyLoader(RealtyspidersItem(), hxs)
         l.add_value('BuildType', self.getBuildType(Referer))
         l.add_value('url', response.url)
-        l.add_value('BuilderLogo', 'Nostra Homes')
+        l.add_value('BuilderLogo', self.logo)
         l.add_value('Region', Region)
 
         l.add_value('Storey', self._getSrorey(referer))

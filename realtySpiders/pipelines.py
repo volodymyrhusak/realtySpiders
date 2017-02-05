@@ -56,7 +56,9 @@ class RealtyspidersPipeline(object):
     #     self.file.close()
 
     def _cleanItem(self, item):
-        return item.strip()
+        return item.strip(',')\
+               .strip('-')\
+               .strip()
 
     def _getYesNo(self, item):
         if item['TheatreRoom_Yes_No']:

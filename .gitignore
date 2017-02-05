@@ -17,5 +17,6 @@ doc/_build/
 *.txt
 *.html
 test
-tets.py
+test.py
 testURL
+setup.py

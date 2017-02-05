@@ -18,6 +18,8 @@ class TruevaluehomesSpider(CrawlSpider):
         # Rule(LinkExtractor(allow=('/homes/new-home-designs/[\w-]+$')), callback='parseItem'),
     )
 
+    logo = 'True Value Homes'
+
     def parseList(self, response):
         referer = response.request.headers.get('Referer', None).decode("utf-8")
         hxs = HtmlXPathSelector(response)
@@ -26,7 +28,7 @@ class TruevaluehomesSpider(CrawlSpider):
             l = RealtyLoader(RealtyspidersItem(), hxsItems)
             l.add_value('BuildType', self._getBuildType(response.url))
             l.add_value('BuilderEmailAddress', 'info@truevaluehomes.com.au')
-            l.add_value('BuilderLogo', 'True Value Homes')
+            l.add_value('BuilderLogo', self.logo)
             l.add_value('url', response.url)
             l.add_xpath('DesignName', './/div[@class="packages-cat-title"]/text()', **{'re': '.*-'})
             l.add_xpath('Region', './/div[@class="packages-cat-middle"]/div[@class="estate"]/text()', **{'re': ',.*'})
@@ -38,6 +40,8 @@ class TruevaluehomesSpider(CrawlSpider):
             l.add_xpath('Garage', './/div[@class="packages-cat-middle"]/div[@class="car"]/text()')
             l.add_xpath('BrochureImage_pdf', './/div[@class="brochure"]/a/@href', **{'myRefer': referer})
             l.add_xpath('BasePrice', '''.//div[@class="price"]/strong/text()''')
+            l.add_xpath('HomeDesignMainImage', './/div[@class="packages-cat-left"]/img/@src',
+                        **{'myRefer': self.start_urls[0]})
             yield l.load_item()
 
 
@@ -65,7 +69,7 @@ class TruevaluehomesSpider(CrawlSpider):
             l.add_value('BuilderEmailAddress', 'info@truevaluehomes.com.au')
 
             try:
-                l.add_value('HomeDesignMainImage', self.itemsList[response.url])
+                l.add_value('HomeDesignMainImage', self.start_urls[0]+self.itemsList[response.url])
             except KeyError:
                 pass
             l.add_value('BuilderLogo', 'True Value Homes')
@@ -75,24 +79,40 @@ class TruevaluehomesSpider(CrawlSpider):
             l.add_xpath('Bathrooms', '//div[@id="house-details"]/div[@class="bath"]/text()')
             l.add_xpath('Garage', '//div[@id="house-details"]/div[@class="car"]/text()')
             l.add_xpath('BrochureImage_pdf', '//div[@class="house-attachment"]/a[text()="Download Brochure"]/@href',
-                        **{'myRefer': referer})
+                        **{'myRefer': self.start_urls[0]})
             l.add_xpath('FloorPlanImage1',
-                        '//li[@class="sigProThumb"][1]/span/span/a/img/@src', **{'myRefer': referer})
-            l.add_xpath('Image1', '//li[@class="sigProThumb"][2]/span/span/a/img/@src', **{'myRefer': referer})
-            l.add_xpath('Image2', '//li[@class="sigProThumb"][3]/span/span/a/img/@src', **{'myRefer': referer})
-            l.add_xpath('Image3', '//li[@class="sigProThumb"][4]/span/span/a/img/@src', **{'myRefer': referer})
-            l.add_xpath('Image4', '//li[@class="sigProThumb"][5]/span/span/a/img/@src', **{'myRefer': referer})
-            l.add_xpath('Image5', '//li[@class="sigProThumb"][6]/span/span/a/img/@src', **{'myRefer': referer})
-            l.add_xpath('Image6', '//li[@class="sigProThumb"][7]/span/span/a/img/@src', **{'myRefer': referer})
-            l.add_xpath('Image7', '//li[@class="sigProThumb"][8]/span/span/a/img/@src', **{'myRefer': referer})
-            l.add_xpath('Image8', '//li[@class="sigProThumb"][9]/span/span/a/img/@src', **{'myRefer': referer})
-            l.add_xpath('Image9', '//li[@class="sigProThumb"][10]/span/span/a/img/@src', **{'myRefer': referer})
-            l.add_xpath('Image10', '//li[@class="sigProThumb"][11]/span/span/a/img/@src', **{'myRefer': referer})
-            l.add_xpath('Image11', '//li[@class="sigProThumb"][12]/span/span/a/img/@src', **{'myRefer': referer})
-            l.add_xpath('Image12', '//li[@class="sigProThumb"][13]/span/span/a/img/@src', **{'myRefer': referer})
-            l.add_xpath('Image13', '//li[@class="sigProThumb"][14]/span/span/a/img/@src', **{'myRefer': referer})
-            l.add_xpath('Image14', '//li[@class="sigProThumb"][15]/span/span/a/img/@src', **{'myRefer': referer})
-            l.add_xpath('Image15', '//li[@class="sigProThumb"][16]/span/span/a/img/@src', **{'myRefer': referer})
+                        '//li[@class="sigProThumb"][1]/span/span/a/img/@style',
+                        **{'myRefer': self.start_urls[0], 're': "(?<=url\(').+.jpg"})
+            l.add_xpath('Image1', '//li[@class="sigProThumb"][2]/span/span/a/img/@style',
+                        **{'myRefer': self.start_urls[0], 're': "(?<=url\(').+.jpg"})
+            l.add_xpath('Image2', '//li[@class="sigProThumb"][3]/span/span/a/img/@style',
+                        **{'myRefer': self.start_urls[0], 're': "(?<=url\(').+.jpg"})
+            l.add_xpath('Image3', '//li[@class="sigProThumb"][4]/span/span/a/img/@style',
+                        **{'myRefer': self.start_urls[0], 're': "(?<=url\(').+.jpg"})
+            l.add_xpath('Image4', '//li[@class="sigProThumb"][5]/span/span/a/img/@style',
+                        **{'myRefer': self.start_urls[0], 're': "(?<=url\(').+.jpg"})
+            l.add_xpath('Image5', '//li[@class="sigProThumb"][6]/span/span/a/img/@style',
+                        **{'myRefer': self.start_urls[0], 're': "(?<=url\(').+.jpg"})
+            l.add_xpath('Image6', '//li[@class="sigProThumb"][7]/span/span/a/img/@style',
+                        **{'myRefer': self.start_urls[0], 're': "(?<=url\(').+.jpg"})
+            l.add_xpath('Image7', '//li[@class="sigProThumb"][8]/span/span/a/img/@style',
+                        **{'myRefer': self.start_urls[0], 're': "(?<=url\(').+.jpg"})
+            l.add_xpath('Image8', '//li[@class="sigProThumb"][9]/span/span/a/img/@style',
+                        **{'myRefer': self.start_urls[0], 're': "(?<=url\(').+.jpg"})
+            l.add_xpath('Image9', '//li[@class="sigProThumb"][10]/span/span/a/img/@style',
+                        **{'myRefer': self.start_urls[0], 're': "(?<=url\(').+.jpg"})
+            l.add_xpath('Image10', '//li[@class="sigProThumb"][11]/span/span/a/img/@style',
+                        **{'myRefer': self.start_urls[0], 're': "(?<=url\(').+.jpg"})
+            l.add_xpath('Image11', '//li[@class="sigProThumb"][12]/span/span/a/img/@style',
+                        **{'myRefer': self.start_urls[0], 're': "(?<=url\(').+.jpg"})
+            l.add_xpath('Image12', '//li[@class="sigProThumb"][13]/span/span/a/img/@style',
+                        **{'myRefer': self.start_urls[0], 're': "(?<=url\(').+.jpg"})
+            l.add_xpath('Image13', '//li[@class="sigProThumb"][14]/span/span/a/img/@style',
+                        **{'myRefer': self.start_urls[0], 're': "(?<=url\(').+.jpg"})
+            l.add_xpath('Image14', '//li[@class="sigProThumb"][15]/span/span/a/img/@style',
+                        **{'myRefer': self.start_urls[0], 're': "(?<=url\(').+.jpg"})
+            l.add_xpath('Image15', '//li[@class="sigProThumb"][16]/span/span/a/img/@style',
+                        **{'myRefer': self.start_urls[0], 're': "(?<=url\(').+.jpg"})
             l.add_value('url', response.url)
 
             descriptionXPath = '//div[@id="content-body"]/div/ul/li/span/text()'
