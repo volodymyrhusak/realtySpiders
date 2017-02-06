@@ -9,6 +9,8 @@ from realtySpiders.spiders.BentleyhomesSpider import BentleyhomesSpider
 from realtySpiders.spiders.BusbyhomesSpider import BusbyhomesSpider
 from realtySpiders.spiders.AshfordhomesSpider import AshfordhomesSpider
 from realtySpiders.spiders.RawdonhillSpider import RawdonhillSpider
+from realtySpiders.spiders.EsperancehomesSpider import EsperancehomesSpider
+from realtySpiders.spiders.HallburyhomesSpiders import HallburyhomesSpider
 from scrapy.utils.project import get_project_settings
 from realtySpiders.settings import FEED_EXPORT_FIELDS
 
@@ -21,10 +23,10 @@ www.truevaluehomes.com.au +
 www.bentleyhomes.com.au +
 www.busbyhomes.com.au +
 www.ashfordhomes.com.au +
-www.rawdonhill.com.au -
-www.esperancehomes.com.au
+www.rawdonhill.com.au +
+www.esperancehomes.com.au -
 www.hamlan.com.au
-hallburyhomes.com.au
+hallburyhomes.com.au -
 www.valecohomes.com.au
 www.stylemasterhomes.com.au
 www.hallmarkhomes.com.au
@@ -48,6 +50,8 @@ spiders = {
     'BentleyhomesSpider': {'class': BentleyhomesSpider, 'logo': BentleyhomesSpider.logo},
     'BusbyhomesSpider': {'class': BusbyhomesSpider, 'logo': BusbyhomesSpider.logo},
     'RawdonhillSpider': {'class': RawdonhillSpider, 'logo': RawdonhillSpider.logo},
+    'EsperancehomesSpider': {'class': EsperancehomesSpider, 'logo': EsperancehomesSpider.logo},
+    'HallburyhomesSpider': {'class': HallburyhomesSpider, 'logo': HallburyhomesSpider.logo},
     'AshfordhomesSpider': {'class': AshfordhomesSpider, 'logo': AshfordhomesSpider.logo}
 }
 
