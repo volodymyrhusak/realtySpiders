@@ -146,7 +146,7 @@ class BentleyhomesSpider(CrawlSpider):
         #
         # Гарантія
         l.add_xpath('SturturalWarranty',
-                    descriptionXPath, **{'re': '?.*guarantee.*|.*[Ww]arranty.*'})
+                    descriptionXPath, **{'re': '.*guarantee.*|.*[Ww]arranty.*'})
         # Вікна
         l.add_xpath('Windows',
                     descriptionXPath, **{'re': '.*[Ww]indows?.*'})

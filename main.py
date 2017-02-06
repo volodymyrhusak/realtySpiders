@@ -8,6 +8,7 @@ from realtySpiders.spiders.ZuccalahomesSpider import ZuccalahomesSpider
 from realtySpiders.spiders.BentleyhomesSpider import BentleyhomesSpider
 from realtySpiders.spiders.BusbyhomesSpider import BusbyhomesSpider
 from realtySpiders.spiders.AshfordhomesSpider import AshfordhomesSpider
+from realtySpiders.spiders.RawdonhillSpider import RawdonhillSpider
 from scrapy.utils.project import get_project_settings
 from realtySpiders.settings import FEED_EXPORT_FIELDS
 
@@ -19,8 +20,8 @@ www.zuccalahomes.com.au +
 www.truevaluehomes.com.au +
 www.bentleyhomes.com.au +
 www.busbyhomes.com.au +
-www.ashfordhomes.com.au -
-www.rawdonhill.com.au
+www.ashfordhomes.com.au +
+www.rawdonhill.com.au -
 www.esperancehomes.com.au
 www.hamlan.com.au
 hallburyhomes.com.au
@@ -46,6 +47,7 @@ spiders = {
     'TruevaluehomesSpider': {'class': TruevaluehomesSpider, 'logo': TruevaluehomesSpider.logo},
     'BentleyhomesSpider': {'class': BentleyhomesSpider, 'logo': BentleyhomesSpider.logo},
     'BusbyhomesSpider': {'class': BusbyhomesSpider, 'logo': BusbyhomesSpider.logo},
+    'RawdonhillSpider': {'class': RawdonhillSpider, 'logo': RawdonhillSpider.logo},
     'AshfordhomesSpider': {'class': AshfordhomesSpider, 'logo': AshfordhomesSpider.logo}
 }
 

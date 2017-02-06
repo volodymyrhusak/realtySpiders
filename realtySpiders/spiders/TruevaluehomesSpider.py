@@ -72,7 +72,7 @@ class TruevaluehomesSpider(CrawlSpider):
                 l.add_value('HomeDesignMainImage', self.start_urls[0]+self.itemsList[response.url])
             except KeyError:
                 pass
-            l.add_value('BuilderLogo', 'True Value Homes')
+            l.add_value('BuilderLogo', self.logo)
             l.add_xpath('DesignName', '//div[@class="content-columns"]/h2[1]/text()')
             l.add_xpath('Squares', '//div[@id="house-details"]/div[@class="sq"]/text()')
             l.add_xpath('Bedrooms', '//div[@id="house-details"]/div[@class="bed"]/text()')
