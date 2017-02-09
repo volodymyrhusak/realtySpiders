@@ -31,10 +31,11 @@ class TruevaluehomesSpider(CrawlSpider):
             l.add_value('BuilderLogo', self.logo)
             l.add_value('url', response.url)
             l.add_xpath('DesignName', './/div[@class="packages-cat-title"]/text()', **{'re': '.*-'})
+            l.add_xpath('Squares', './/div[@class="packages-cat-title"]/text()', **{'re': '\d+\ssq'})
             l.add_xpath('Region', './/div[@class="packages-cat-middle"]/div[@class="estate"]/text()', **{'re': ',.*'})
             l.add_xpath('DisplayLocation', './/div[@class="packages-cat-middle"]/div[@class="estate"]/text()',
                         **{'re': '.*,'})
-            l.add_xpath('Squares', './/div[@class="packages-cat-middle"]/div[@class="sq"]/text()')
+            l.add_xpath('LandSize', './/div[@class="packages-cat-middle"]/div[@class="sq"]/text()')
             l.add_xpath('Bedrooms', './/div[@class="packages-cat-middle"]/div[@class="bed"]/text()')
             l.add_xpath('Bathrooms', './/div[@class="packages-cat-middle"]/div[@class="bath"]/text()')
             l.add_xpath('Garage', './/div[@class="packages-cat-middle"]/div[@class="car"]/text()')
@@ -63,13 +64,15 @@ class TruevaluehomesSpider(CrawlSpider):
     def parseItem(self, response):
         referer = response.request.headers.get('Referer', None).decode("utf-8")
         if self._chakURL(response.url):
+            if re.search(r'\d+-special-offers', response.url):
+                return None
             hxs = HtmlXPathSelector(response)
             l = RealtyLoader(RealtyspidersItem(), hxs)
             l.add_value('BuildType', self._getBuildType(response.url))
             l.add_value('BuilderEmailAddress', 'info@truevaluehomes.com.au')
 
             try:
-                l.add_value('HomeDesignMainImage', self.start_urls[0]+self.itemsList[response.url])
+                l.add_value('HomeDesignMainImage', self.start_urls[0] + self.itemsList[response.url])
             except KeyError:
                 pass
             l.add_value('BuilderLogo', self.logo)
@@ -81,38 +84,38 @@ class TruevaluehomesSpider(CrawlSpider):
             l.add_xpath('BrochureImage_pdf', '//div[@class="house-attachment"]/a[text()="Download Brochure"]/@href',
                         **{'myRefer': self.start_urls[0]})
             l.add_xpath('FloorPlanImage1',
-                        '//li[@class="sigProThumb"][1]/span/span/a/img/@style',
-                        **{'myRefer': self.start_urls[0], 're': "(?<=url\(').+.jpg"})
-            l.add_xpath('Image1', '//li[@class="sigProThumb"][2]/span/span/a/img/@style',
-                        **{'myRefer': self.start_urls[0], 're': "(?<=url\(').+.jpg"})
-            l.add_xpath('Image2', '//li[@class="sigProThumb"][3]/span/span/a/img/@style',
-                        **{'myRefer': self.start_urls[0], 're': "(?<=url\(').+.jpg"})
-            l.add_xpath('Image3', '//li[@class="sigProThumb"][4]/span/span/a/img/@style',
-                        **{'myRefer': self.start_urls[0], 're': "(?<=url\(').+.jpg"})
-            l.add_xpath('Image4', '//li[@class="sigProThumb"][5]/span/span/a/img/@style',
-                        **{'myRefer': self.start_urls[0], 're': "(?<=url\(').+.jpg"})
-            l.add_xpath('Image5', '//li[@class="sigProThumb"][6]/span/span/a/img/@style',
-                        **{'myRefer': self.start_urls[0], 're': "(?<=url\(').+.jpg"})
-            l.add_xpath('Image6', '//li[@class="sigProThumb"][7]/span/span/a/img/@style',
-                        **{'myRefer': self.start_urls[0], 're': "(?<=url\(').+.jpg"})
-            l.add_xpath('Image7', '//li[@class="sigProThumb"][8]/span/span/a/img/@style',
-                        **{'myRefer': self.start_urls[0], 're': "(?<=url\(').+.jpg"})
-            l.add_xpath('Image8', '//li[@class="sigProThumb"][9]/span/span/a/img/@style',
-                        **{'myRefer': self.start_urls[0], 're': "(?<=url\(').+.jpg"})
-            l.add_xpath('Image9', '//li[@class="sigProThumb"][10]/span/span/a/img/@style',
-                        **{'myRefer': self.start_urls[0], 're': "(?<=url\(').+.jpg"})
-            l.add_xpath('Image10', '//li[@class="sigProThumb"][11]/span/span/a/img/@style',
-                        **{'myRefer': self.start_urls[0], 're': "(?<=url\(').+.jpg"})
-            l.add_xpath('Image11', '//li[@class="sigProThumb"][12]/span/span/a/img/@style',
-                        **{'myRefer': self.start_urls[0], 're': "(?<=url\(').+.jpg"})
-            l.add_xpath('Image12', '//li[@class="sigProThumb"][13]/span/span/a/img/@style',
-                        **{'myRefer': self.start_urls[0], 're': "(?<=url\(').+.jpg"})
-            l.add_xpath('Image13', '//li[@class="sigProThumb"][14]/span/span/a/img/@style',
-                        **{'myRefer': self.start_urls[0], 're': "(?<=url\(').+.jpg"})
-            l.add_xpath('Image14', '//li[@class="sigProThumb"][15]/span/span/a/img/@style',
-                        **{'myRefer': self.start_urls[0], 're': "(?<=url\(').+.jpg"})
-            l.add_xpath('Image15', '//li[@class="sigProThumb"][16]/span/span/a/img/@style',
-                        **{'myRefer': self.start_urls[0], 're': "(?<=url\(').+.jpg"})
+                        '//li[@class="sigProThumb"][1]/span/span/a/@href',
+                        **{'myRefer': self.start_urls[0]})
+            l.add_xpath('Image1', '//li[@class="sigProThumb"][2]/span/span/a/@href',
+                        **{'myRefer': self.start_urls[0]})
+            l.add_xpath('Image2', '//li[@class="sigProThumb"][3]/span/span/a/@href',
+                        **{'myRefer': self.start_urls[0]})
+            l.add_xpath('Image3', '//li[@class="sigProThumb"][4]/span/span/a/@href',
+                        **{'myRefer': self.start_urls[0]})
+            l.add_xpath('Image4', '//li[@class="sigProThumb"][5]/span/span/a/@href',
+                        **{'myRefer': self.start_urls[0]})
+            l.add_xpath('Image5', '//li[@class="sigProThumb"][6]/span/span/a/@href',
+                        **{'myRefer': self.start_urls[0]})
+            l.add_xpath('Image6', '//li[@class="sigProThumb"][7]/span/span/a/@href',
+                        **{'myRefer': self.start_urls[0]})
+            l.add_xpath('Image7', '//li[@class="sigProThumb"][8]/span/span/a/@href',
+                        **{'myRefer': self.start_urls[0]})
+            l.add_xpath('Image8', '//li[@class="sigProThumb"][9]/span/span/a/@href',
+                        **{'myRefer': self.start_urls[0]})
+            l.add_xpath('Image9', '//li[@class="sigProThumb"][10]/span/span/a/@href',
+                        **{'myRefer': self.start_urls[0]})
+            l.add_xpath('Image10', '//li[@class="sigProThumb"][11]/span/span/a/@href',
+                        **{'myRefer': self.start_urls[0]})
+            l.add_xpath('Image11', '//li[@class="sigProThumb"][12]/span/span/a/@href',
+                        **{'myRefer': self.start_urls[0]})
+            l.add_xpath('Image12', '//li[@class="sigProThumb"][12]/span/span/a/@href',
+                        **{'myRefer': self.start_urls[0]})
+            l.add_xpath('Image13', '//li[@class="sigProThumb"][14]/span/span/a/@href',
+                        **{'myRefer': self.start_urls[0]})
+            l.add_xpath('Image14', '//li[@class="sigProThumb"][15]/span/span/a/@href',
+                        **{'myRefer': self.start_urls[0]})
+            l.add_xpath('Image15', '//li[@class="sigProThumb"][16]/span/span/a/@href',
+                        **{'myRefer': self.start_urls[0]})
             l.add_value('url', response.url)
 
             descriptionXPath = '//div[@id="content-body"]/div/ul/li/span/text()'
@@ -223,7 +226,7 @@ class TruevaluehomesSpider(CrawlSpider):
             self.itemsList = {items: img for items, img in zip(itemsURL, imgURL)}
 
     def _chakURL(self, url):
-        if re.search('http://www.truevaluehomes.com.au/homes/new-home-designs$', url):
+        if re.search(r'http://www.truevaluehomes.com.au/homes/new-home-designs$', url):
             return False
         return True
 
