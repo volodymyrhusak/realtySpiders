@@ -70,8 +70,8 @@ class L37Spider(CrawlSpider):
 
     def parseItem(self, response):
         referer = response.request.headers.get('Referer', None).decode("utf-8")
-        with open('testURL', 'a') as file:
-            file.write(response.url + '   ' + referer + '\n')
+        # with open('testURL', 'a') as file:
+        #     file.write(response.url + '   ' + referer + '\n')
         hxs = HtmlXPathSelector(response)
         BuildType = self._getBuildType(referer)
         imgXpath = '''//ul[@class="slides"]/li[{}]/img/@src'''
