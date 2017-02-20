@@ -14,6 +14,7 @@ from realtySpiders.spiders.L37Spider import L37Spider
 from realtySpiders.spiders.HallburyhomesSpiders import HallburyhomesSpider
 from realtySpiders.spiders.ValecohomesSpider import ValecohomesSpider
 from realtySpiders.spiders.HamlanSpider import HamlanSpider
+from realtySpiders.spiders.HallmarkhomesSpider import HallmarkhomesSpider
 from scrapy.utils.project import get_project_settings
 from realtySpiders.settings import FEED_EXPORT_FIELDS
 
@@ -30,9 +31,9 @@ www.rawdonhill.com.au +
 hallburyhomes.com.au +
 www.esperancehomes.com.au(www.l37.com.au) +
 www.valecohomes.com.au +
-www.hamlan.com.au -
+www.hamlan.com.au +
 www.stylemasterhomes.com.au -
-www.hallmarkhomes.com.au
+www.hallmarkhomes.com.au -
 '''
 
 # First milestone
@@ -50,7 +51,8 @@ www.hallmarkhomes.com.au
 # process.crawl(L37Spider)
 # process.crawl(ValecohomesSpider)
 # Forth milestone
-# process.crawl(StylemasterhomesSpider)
+# process.crawl(HamlanSpider)
+# process.crawl(HallmarkhomesSpider)
 
 
 spiders = {
@@ -65,6 +67,7 @@ spiders = {
     'HallburyhomesSpider': {'class': HallburyhomesSpider, 'logo': HallburyhomesSpider.logo},
     'ValecohomesSpider': {'class': ValecohomesSpider, 'logo': ValecohomesSpider.logo},
     'HamlanSpider': {'class': HamlanSpider, 'logo': HamlanSpider.logo},
+    'HallmarkhomesSpider': {'class': HallmarkhomesSpider, 'logo': HallmarkhomesSpider.logo},
     'AshfordhomesSpider': {'class': AshfordhomesSpider, 'logo': AshfordhomesSpider.logo}
 }
 
