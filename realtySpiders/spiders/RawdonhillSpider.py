@@ -20,6 +20,10 @@ class RawdonhillSpider(CrawlSpider):
         # Rule(LinkExtractor(allow=('/homes/new-home-designs/[\w-]+$')), callback='parseItem'),
     )
 
+    oth = (
+    'Kid\'s Retreat', 'Decking', 'Kids Retreat', 'Play Area', 'Rumpus', 'Games Room', 'Grand Master', 'Play Room',
+    'Courtyard', 'Bedroom 5', 'Entry', 'Guest Room')
+
     logo = 'Rawdon Hill'
 
     def parseOurhomes(self, response):
@@ -29,10 +33,16 @@ class RawdonhillSpider(CrawlSpider):
         imgXpath = '//div[@class="home--single__gallery-images hidden-sm hidden-xs"]/a[{}]/@href'
         descrXpath = '//*[@id="sb-site"]/div[2]/div[3]/div/div/div[1]/p/text()'
         hxs = HtmlXPathSelector(response)
-        # data =hxs.xpath('//div[@class="specs-table"]/div/div[@class="area"]/text()').extract()
+        # data = hxs.xpath('//div[@class="specs-table"]/div/div[@class="area"]/text()').extract()
         # with open('testURL', 'a') as file:
         #     for i in data:
-        #         file.writelines(i+'\n')
+        #         file.writelines(i + '\n')
+        other = []
+        for name in self.oth:
+            size = hxs.xpath(areaXpath.format(name)).extract_first()
+            if size:
+                other.append('{}:{}'.format(name, size))
+
         l = RealtyLoader(RealtyspidersItem(), hxs)
         l.add_value('url', response.url)
         l.add_value('BuildType', self._getBuildType(response.url))
@@ -44,22 +54,29 @@ class RawdonhillSpider(CrawlSpider):
         l.add_xpath('Bedrooms', '//*[@id="floorplan-1"]/div[@class="bedrooms"]/text()')
         l.add_xpath('Bathrooms', '//*[@id="floorplan-1"]/div[@class="bathrooms"]/text()')
         l.add_xpath('Garage', '//*[@id="floorplan-1"]/div[@class="cars"]/text()')
-        l.add_xpath('FamilyDimension', areaXpath.format('Family'))
-        l.add_xpath('Meals_DiningDimension',areaXpath.format('Meals'))
-        l.add_xpath('LoungeDimension',areaXpath.format('Lounge'))
-        l.add_xpath('AlfrescoDimension',areaXpath.format('Alfresco'))
-        l.add_xpath('Alfresco_Yes_No',areaXpath.format('Alfresco'))
-        l.add_xpath('GarageDimension',areaXpath.format('Garage'))
-        l.add_xpath('MasterBedroomDimension',areaXpath.format('Master Bedroom'))
-        l.add_xpath('Bedroom2Dimension',areaXpath.format('Bedroom 2'))
-        l.add_xpath('Bedroom3Dimension',areaXpath.format('Bedroom 3'))
-        l.add_xpath('Bedroom4Dimension',areaXpath.format('Bedroom 4'))
-        l.add_xpath('KitchenDimension',areaXpath.format('Kitchen'))
-        l.add_xpath('Study_Yes_No',areaXpath.format('Study'))
-        l.add_xpath('StudyDimension',areaXpath.format('Study'))
-
-        l.add_xpath('FloorPlanImage1', '//*[@id="floorplan-1"]/@scr')
-        l.add_xpath('HomeDesignMainImage', '//*[@class="home--single__full-image"]/a/@href')
+        l.add_xpath('FamilyDimension',
+                    [areaXpath.format('Family'), areaXpath.format('Family/Lounge'), areaXpath.format('family')])
+        l.add_xpath('Meals_DiningDimension', [areaXpath.format('Meals'), areaXpath.format('Family/Meals')])
+        l.add_xpath('LoungeDimension', areaXpath.format('Lounge'))
+        l.add_xpath('AlfrescoDimension', areaXpath.format('Alfresco'))
+        l.add_xpath('Alfresco_Yes_No', areaXpath.format('Alfresco'))
+        l.add_xpath('TheatreRoom_Yes_No', areaXpath.format('Theatre'))
+        l.add_xpath('TheatreDimension', areaXpath.format('Theatre'))
+        l.add_xpath('GarageDimension', areaXpath.format('Garage'))
+        l.add_xpath('MasterBedroomDimension',
+                    [areaXpath.format('Master Bedroom'), areaXpath.format('Bedroom 1'), areaXpath.format('Bed 1'),
+                     areaXpath.format('Master')])
+        l.add_xpath('Bedroom2Dimension',
+                    [areaXpath.format('Bedroom 2'), areaXpath.format('Bed 2'), areaXpath.format('Bedroom 2/Lounge')])
+        l.add_xpath('Bedroom3Dimension', [areaXpath.format('Bedroom 3'), areaXpath.format('Bed 3')])
+        l.add_xpath('Bedroom4Dimension',
+                    [areaXpath.format('Bedroom 4'), areaXpath.format('Bed 4')])
+        l.add_xpath('KitchenDimension', areaXpath.format('Kitchen'))
+        l.add_xpath('Study_Yes_No', areaXpath.format('Study'))
+        l.add_xpath('StudyDimension', areaXpath.format('Study'))
+        l.add_xpath('FloorPlanImage1', '//*[@id="floorplan-1"]/@src')
+        l.add_xpath('HomeDesignMainImage',
+                    '//*[@class="home--single__full-image"]/a/@href')
         l.add_xpath('Image1', imgXpath.format('1'))
         l.add_xpath('Image2', imgXpath.format('2'))
         l.add_xpath('Image3', imgXpath.format('3'))
@@ -79,14 +96,17 @@ class RawdonhillSpider(CrawlSpider):
                     descrXpath, **{'re': '[a-zA-Z]+@[a-z]+\.com\.au'})
 
         # Block Yes No
-        l.add_xpath('TheatreRoom_Yes_No',descrXpath, **{'re': '[tT]heatre'})
-        l.add_xpath('SeparateMeals_Yes_No',descrXpath, **{'re': '[Ss]eparate|[Mm]eals'})
-        l.add_xpath('WalkinPantry_Yes_No',descrXpath, **{'re': '([Ww]alkin|[Pp]antry)'})
+        l.add_xpath('TheatreRoom_Yes_No', descrXpath, **{'re': '[tT]heatre'})
+        l.add_xpath('SeparateMeals_Yes_No', descrXpath,
+                    **{'re': '[Ss]eparate|[Mm]eals'})
+        l.add_xpath('WalkinPantry_Yes_No', descrXpath,
+                    **{'re': '([Ww]alkin|[Pp]antry)'})
         l.add_xpath('BultersPantry_Yes_No',
                     descrXpath, **{'re': '[Bb]ulter[`]?s?'})
         l.add_xpath('SteelStructure_Yes_No',
-                    descrXpath, **{'re': '([Ss]teel.*[Ss]tructure)|([Ss]tructure.*[Ss]teel)'})
-        l.add_xpath('Balcony_Yes_No',descrXpath , **{'re': '[Bb]alcony'})
+                    descrXpath,
+                    **{'re': '([Ss]teel.*[Ss]tructure)|([Ss]tructure.*[Ss]teel)'})
+        l.add_xpath('Balcony_Yes_No', descrXpath, **{'re': '[Bb]alcony'})
         #
         # Гарантія
         l.add_xpath('SturturalWarranty',
@@ -96,16 +116,20 @@ class RawdonhillSpider(CrawlSpider):
                     descrXpath, **{'re': '.*[Ww]indows?.*'})
         # Кухонна плита
         l.add_xpath('KitchenBenchtop',
-                    descrXpath, **{'re': '.*[Kk]itchen.*[Bb]enchtop.*|.*[Bb]enchtop.*[Kk]itchen.*'})
+                    descrXpath, **{
+                're': '.*[Kk]itchen.*[Bb]enchtop.*|.*[Bb]enchtop.*[Kk]itchen.*'})
         # Сигналізація
         l.add_xpath('SecuritySystem',
-                    descrXpath, **{'re': '.*[Ss]ecurity.*[sS]ystem.*}.*[sS]ystem.*[Ss]ecurity.*'})
+                    descrXpath,
+                    **{'re': '.*[Ss]ecurity.*[sS]ystem.*}.*[sS]ystem.*[Ss]ecurity.*'})
         # Клас енергозбереження
         l.add_xpath('EnergyRating',
-                    descrXpath, **{'re': '.*[Ee]nergy.*[rR]ating.*|.*[rR]ating.*[Ee]nergy.*'})
+                    descrXpath,
+                    **{'re': '.*[Ee]nergy.*[rR]ating.*|.*[rR]ating.*[Ee]nergy.*'})
         # Кухонне приладдя
         l.add_xpath('KitchenAppliance',
-                    descrXpath, **{'re': '.*([Kk]itchen.*[Aa]ppliance).*|.*([Aa]ppliance.*[Kk]itchen).*'})
+                    descrXpath, **{
+                're': '.*([Kk]itchen.*[Aa]ppliance).*|.*([Aa]ppliance.*[Kk]itchen).*'})
         # Бренд пристрою
         l.add_xpath('ApplianceBrand',
                     descrXpath, **{'re': '.*[\w\s]+[Ss]ecurity System.*'})
@@ -114,7 +138,8 @@ class RawdonhillSpider(CrawlSpider):
                     descrXpath, **{'re': '.*[Ss]plashback.*'})
         # Покриття підлоги
         l.add_xpath('FloorCovering',
-                    descrXpath, **{'re': '.*[Ff]loor.*[Cc]overings?.*|.*[Cc]overings?.*[Ff]loor.*'})
+                    descrXpath, **{
+                're': '.*[Ff]loor.*[Cc]overings?.*|.*[Cc]overings?.*[Ff]loor.*'})
         # Охолодження
         l.add_xpath('Cooling',
                     descrXpath, **{'re': '.*[Cc]ooling.*'})
@@ -129,13 +154,15 @@ class RawdonhillSpider(CrawlSpider):
                     descrXpath, **{'re': '.*[Tt]ile.*'})
         # Плита в ванній
         l.add_xpath('EnsuiteBenchtop',
-                    descrXpath, **{'re': '.*[Ee]nsuite.*[Bb]enchtop.*|.*[Bb]enchtop.*[Ee]nsuite.*'})
+                    descrXpath, **{
+                're': '.*[Ee]nsuite.*[Bb]enchtop.*|.*[Bb]enchtop.*[Ee]nsuite.*'})
         # Душова
         l.add_xpath('EnsuiteShowerbase',
                     descrXpath, **{'re': '.*[Ss]howerbase.*'})
         # Фарба на стінах
         l.add_xpath('WallPaint',
-                    descrXpath, **{'re': '.*[Ww]all.*[Pp]aint.*|.*[Pp]aint.*[Ww]all.*'})
+                    descrXpath,
+                    **{'re': '.*[Ww]all.*[Pp]aint.*|.*[Pp]aint.*[Ww]all.*'})
         # Гардероб
         l.add_xpath('WIRFitouts',
                     descrXpath, **{'re': '.*walk in robe.*|.*WIR.*'})
@@ -151,6 +178,7 @@ class RawdonhillSpider(CrawlSpider):
         # Реклама
         l.add_xpath('Promotion',
                     descrXpath, **{'re': '.*[Pp]romotion.*'})
+        l.add_value('OtherInclusions', ', '.join(other))
 
         return l.load_item()
 

@@ -1,6 +1,5 @@
 import re
 from scrapy.spiders import Rule, CrawlSpider
-from scrapy.linkextractors import LinkExtractor
 from scrapy.linkextractors.lxmlhtml import LxmlLinkExtractor
 from scrapy.selector import HtmlXPathSelector
 from realtySpiders.items import RealtyspidersItem

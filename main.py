@@ -1,6 +1,7 @@
 import csv
 import argparse
 from scrapy.crawler import CrawlerProcess
+
 from realtySpiders.spiders.FrenkenhomesSpider import FrenkenhomesSpider
 from realtySpiders.spiders.NostrahomesSpider import NostrahomesSpider
 from realtySpiders.spiders.TruevaluehomesSpider import TruevaluehomesSpider
@@ -12,6 +13,7 @@ from realtySpiders.spiders.RawdonhillSpider import RawdonhillSpider
 from realtySpiders.spiders.L37Spider import L37Spider
 from realtySpiders.spiders.HallburyhomesSpiders import HallburyhomesSpider
 from realtySpiders.spiders.ValecohomesSpider import ValecohomesSpider
+from realtySpiders.spiders.HamlanSpider import HamlanSpider
 from scrapy.utils.project import get_project_settings
 from realtySpiders.settings import FEED_EXPORT_FIELDS
 
@@ -28,8 +30,8 @@ www.rawdonhill.com.au +
 hallburyhomes.com.au +
 www.esperancehomes.com.au(www.l37.com.au) +
 www.valecohomes.com.au +
-www.hamlan.com.au
-www.stylemasterhomes.com.au
+www.hamlan.com.au -
+www.stylemasterhomes.com.au -
 www.hallmarkhomes.com.au
 '''
 
@@ -47,6 +49,8 @@ www.hallmarkhomes.com.au
 # process.crawl(HallburyhomesSpider)
 # process.crawl(L37Spider)
 # process.crawl(ValecohomesSpider)
+# Forth milestone
+# process.crawl(StylemasterhomesSpider)
 
 
 spiders = {
@@ -60,6 +64,7 @@ spiders = {
     'L37Spider': {'class': L37Spider, 'logo': L37Spider.logo},
     'HallburyhomesSpider': {'class': HallburyhomesSpider, 'logo': HallburyhomesSpider.logo},
     'ValecohomesSpider': {'class': ValecohomesSpider, 'logo': ValecohomesSpider.logo},
+    'HamlanSpider': {'class': HamlanSpider, 'logo': HamlanSpider.logo},
     'AshfordhomesSpider': {'class': AshfordhomesSpider, 'logo': AshfordhomesSpider.logo}
 }
 
@@ -95,9 +100,9 @@ def main(sName):
 
 
 if __name__ == '__main__':
-    help = ','.join([v for v in spiders])
+    help = '\n'.join([v for v in spiders])
     parse = parser = argparse.ArgumentParser()
-    parse.add_argument('one', type=str, nargs='?', const='const-one', default=False, help=str(help))
+    parse.add_argument('Spiders', type=str, nargs='?', const='const-one', default=False, help=str(help))
     arg = parse.parse_args()
-    sName = arg.one
+    sName = arg.Spiders
     main(sName)

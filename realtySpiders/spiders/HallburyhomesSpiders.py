@@ -20,6 +20,8 @@ class HallburyhomesSpider(CrawlSpider):
         # Rule(LinkExtractor(allow=('/homes/new-home-designs/[\w-]+$')), callback='parseItem'),
     )
 
+    oth = ('Rumpus','Bed 5','Sitting Area','Retreat','Activity','Games','Outdoor Living','Lounge','Guest Room')
+
     logo = 'Hallbury homes'
 
     def parseDisplay(self, response):
@@ -32,13 +34,13 @@ class HallburyhomesSpider(CrawlSpider):
             yield Request(str(link), callback=self.parseItem, dont_filter=True, meta=data)
 
     def parseNewHome(self, response):
-        links = LxmlLinkExtractor(allow=('http://hallburyhomes.com.au/new-homes/[\w-]+$'),
+        links = LxmlLinkExtractor(allow=('https?://hallburyhomes.com.au/new-homes/[\w-]+$'),
                                   restrict_xpaths='//div[@class="section +t-padding-none"][1]').extract_links(response)
         for link in links:
             data = {'storey': '1'}
             yield Request(link.url, callback=self.parseItem, dont_filter=True, meta=data)
 
-        links = LxmlLinkExtractor(allow=('http://hallburyhomes.com.au/new-homes/[\w-]+$'),
+        links = LxmlLinkExtractor(allow=('https?://hallburyhomes.com.au/new-homes/[\w-]+$'),
                                   restrict_xpaths='//div[@class="section +t-padding-none"][2]').extract_links(response)
         for link in links:
             data = {'storey': '2'}
@@ -54,10 +56,18 @@ class HallburyhomesSpider(CrawlSpider):
         areaXpath = '//div[@class="table-light"]/table/tbody/tr/td[text()="{}"]/following-sibling::td[1]/text()'
         roomsXpath = '''//h1[text()="Room dimensions"]/following-sibling::
                         dl/dt[text()="{}"]/following-sibling::dd[1]/text()'''
-        # data = hxs.xpath(roomsXpath).extract()
+        # roomsDIMENSIONSXpath = '''//h1[text()="Room dimensions"]/following-sibling::
+        #                 dl/dt/text()'''
+        # data = hxs.xpath(roomsDIMENSIONSXpath).extract()
         # with open('testURL','a') as file:
         #     for i in data:
         #         file.write(i+'\n')
+        other = []
+        for name in self.oth:
+            size = hxs.xpath(roomsXpath.format(name)).extract_first()
+            if size:
+                other.append('{}:{}'.format(name,size))
+
         l = RealtyLoader(RealtyspidersItem(), hxs)
         l.add_value('url', response.url)
         l.add_value('BuildType', BuildType)
@@ -88,7 +98,9 @@ class HallburyhomesSpider(CrawlSpider):
         l.add_xpath('Bedroom2Dimension', [roomsXpath.format('Bed 2'), roomsXpath.format('Bedroom 2')])
         l.add_xpath('Bedroom3Dimension', [roomsXpath.format('Bed 3'), roomsXpath.format('Bedroom 3')])
         l.add_xpath('Bedroom4Dimension', [roomsXpath.format('Bed 4'), roomsXpath.format('Bedroom 4')])
-        l.add_xpath('Study_Yes_No', [roomsXpath.format('Study'), roomsXpath.format('Study')])
+        l.add_xpath('Study_Yes_No', [roomsXpath.format('Study'), roomsXpath.format('Study (ground floor)'),
+                                       roomsXpath.format('Study (first floor)'),
+                                       roomsXpath.format('Study (First floor)')])
         l.add_xpath('StudyDimension', [roomsXpath.format('Study'), roomsXpath.format('Study (ground floor)'),
                                        roomsXpath.format('Study (first floor)'),
                                        roomsXpath.format('Study (First floor)')])
@@ -96,7 +108,9 @@ class HallburyhomesSpider(CrawlSpider):
         l.add_xpath('Meals_DiningDimension',
                     [roomsXpath.format('Family / Meals'), roomsXpath.format('Meals/Family'),
                      roomsXpath.format('Living / Meals'), roomsXpath.format('Meals')])
+        l.add_xpath('TheatreRoom_Yes_No', [roomsXpath.format('Theatre')])
         l.add_xpath('TheatreDimension', [roomsXpath.format('Theatre')])
+        l.add_xpath('LivingArea', [roomsXpath.format('Living')])
 
         l.add_xpath('BrochureImage_pdf',
                     '//div[@class="+v-spacer-xs +t-margin-sm"]/div/a[text()="\t\tDownload Floorplan\n\t"]/@href')
@@ -117,6 +131,8 @@ class HallburyhomesSpider(CrawlSpider):
         l.add_xpath('Image13', imgXpath.format('13'))
         l.add_xpath('Image14', imgXpath.format('14'))
         l.add_xpath('Image15', imgXpath.format('15'))
+
+        l.add_value('OtherInclusions',', '.join(other))
 
         return l.load_item()
 
