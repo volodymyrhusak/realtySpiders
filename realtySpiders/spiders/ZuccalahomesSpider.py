@@ -93,6 +93,8 @@ class ZuccalahomesSpider(CrawlSpider):
                     '''//div[@class="single-property"]/div/span[@class="bath"]/strong/text()''')
         l.add_xpath('Garage',
                     '''//div[@class="single-property"]/div/span[@class="car"]/strong/text()''')
+        l.add_xpath('Squares',
+                    '''//div[@class="single-property"]/div/span[@class="area "]/strong/text()''')
         l.add_xpath('SturturalWarranty',
                     '//div[@id="description"]/p/text()', **{'re': '"?.*[\w\s]+guarantee.*"?'})
 

@@ -29,7 +29,6 @@ class StylemasterhomesSpider(CrawlSpider):
     logo = 'Latitude 37'
 
     def getAjax(self, response):
-        print('getAjax')
         url = 'http://stylemasterhomes.com.au/wp-admin/admin-ajax.php'
         formdata ={'action':'getOurHomeResults',
                     'lotLengthLower':'0',
@@ -56,14 +55,13 @@ class StylemasterhomesSpider(CrawlSpider):
         return requests
 
     def parseItem(self, response):
-        print('parseItem')
         referer = response.request.headers.get('Referer', None).decode("utf-8")
         # links = LxmlLinkExtractor(allow=('http://stylemasterhomes.com.au/home/[\w-]+/$')).extract_links(response)
         # for link in links:
         # with open('testURL', 'a') as file:
-        with open('data.html', 'a') as file:
-            # file.write(response.url + '   ' + referer + '\n')
-            file.write(str(response.body))
+        # with open('data.html', 'a') as file:
+        #     # file.write(response.url + '   ' + referer + '\n')
+        #     file.write(str(response.body))
 
     def _getBuildType(self, url):
         if url.find('custom-home-portfolio') != -1:

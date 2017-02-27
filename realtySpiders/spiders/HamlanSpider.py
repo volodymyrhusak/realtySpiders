@@ -79,7 +79,6 @@ class HamlanSpider(CrawlSpider):
         region = hxs.xpath('//select[@id="display-refine-region"]/option/@value').extract()[1::]
         regionName = hxs.xpath('//select[@id="display-refine-region"]/option/text()').extract()[1::]
         url = 'https://www.hamlan.com.au/wp-admin/admin-ajax.php'
-        print(region)
         for n,i in enumerate(region):
             formdata = {'action': 'getDisplayLocationResults',
                         'selectedRegion': '{}'.format(i)
@@ -97,7 +96,6 @@ class HamlanSpider(CrawlSpider):
                                                                                                      '') + '</body></html>'
         body = body.encode('utf-8')
         response = response.replace(body=body)
-        # print(type(body))
         # hxs = HtmlXPathSelector(response)
         # links = hxs.xpath('/html/body/div[1]/div/a/@href').extract()
         links = LxmlLinkExtractor(
@@ -125,7 +123,7 @@ class HamlanSpider(CrawlSpider):
         #     file.writelines('\n'.join(hxs.xpath('//div[@class="col-md-8"]/table/tbody/tr/td[1]/text()').extract()))
         inclusionsXpath = '''//div[@class="clearfix inclusions-block-inner"]/ul/li/text()'''
         imgXpath = '//input[@class="mfp-images"][{}]/@value'
-        descriptionXPath = '//div[@id="admin-content"]/p/text()'
+        descriptionXPath = '//div[@class="admin-content"]/p/text()'
 
         l = RealtyLoader(RealtyspidersItem(), hxs)
         l.add_value('url', response.url)
@@ -148,8 +146,11 @@ class HamlanSpider(CrawlSpider):
         l.add_xpath('Garage', '//span[@class="facility-list clearfix"]/em[3]//strong/text()')
         l.add_xpath('LandSize', '//span[@class="img-caption"]//i/text()', **{'re': '(?<=Land size - ).+'})
         l.add_xpath('BasePrice', '//span[@class="product-price"]/text()')
+        l.add_xpath('Lot_BlockAddress', '//div[@class="admin-content"]/h3/text()')
         l.add_xpath('BrochureImage_pdf', '//a[text()="Download Flyer"]/@href')
-        l.add_xpath('InclusionsImage_pdf', '//a[text()="Download Floorplan & Options"]/@href')
+        l.add_xpath('InclusionsImage_pdf', '//a[text()="Download Inclusions"]/@href')
+        l.add_xpath('OtherInclusions',
+                    '//a[text()="Download Floorplan & Options"]/@href')
         l.add_xpath('FloorPlanImage1', '//a[@class="image-lightbox"]/img/@src')
         l.add_xpath('Image1', imgXpath.format('1'))
         l.add_xpath('Image2', imgXpath.format('2'))
@@ -256,8 +257,7 @@ class HamlanSpider(CrawlSpider):
         l.add_xpath('Promotion',
                     [descriptionXPath, inclusionsXpath], **{'re': '.*[Pp]romotion.*'})
         # # # інші штуки
-        # # l.add_xpath('OtherInclusions',
-        # #             descriptionXPath, **{'re': '[\w\s]+[Ss]ecurity System'})
+
         # # l.add_xpath('OtherInclusions1',
         # #             descriptionXPath, **{'re': '[\w\s]+[Ss]ecurity System'})
         # # l.add_xpath('OtherInclusions2',

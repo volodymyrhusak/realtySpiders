@@ -16,6 +16,7 @@ from realtySpiders.spiders.ValecohomesSpider import ValecohomesSpider
 from realtySpiders.spiders.HamlanSpider import HamlanSpider
 from realtySpiders.spiders.HallmarkhomesSpider import HallmarkhomesSpider
 from realtySpiders.spiders.ArdenhomesSpider import ArdenhomesSpider
+from realtySpiders.spiders.TrevorhomesSpider import TrevorhomesSpider
 from scrapy.utils.project import get_project_settings
 from realtySpiders.settings import FEED_EXPORT_FIELDS
 
@@ -39,23 +40,24 @@ www.ardenhomes.com.au
 '''
 
 # First milestone
-# process.crawl(FrenkenhomesSpider)
-# process.crawl(NostrahomesSpider)
-# process.crawl(ZuccalahomesSpider)
+# process.crawl(FrenkenhomesSpider) +
+# process.crawl(NostrahomesSpider) +
+# process.crawl(ZuccalahomesSpider) +
 # Second milestone
-# process.crawl(TruevaluehomesSpider)
-# process.crawl(BentleyhomesSpider)
-# process.crawl(BusbyhomesSpider)
+# process.crawl(TruevaluehomesSpider) +
+# process.crawl(BentleyhomesSpider) +
+# process.crawl(BusbyhomesSpider) +
 # process.crawl(AshfordhomesSpider)
 # Third milestone
-# process.crawl(RawdonhillSpider)
-# process.crawl(HallburyhomesSpider)
-# process.crawl(L37Spider)
-# process.crawl(ValecohomesSpider)
+# process.crawl(RawdonhillSpider) +
+# process.crawl(HallburyhomesSpider) +
+# process.crawl(L37Spider) +
+# process.crawl(ValecohomesSpider) +
 # Forth milestone
-# process.crawl(HamlanSpider)
-# process.crawl(HallmarkhomesSpider)
-# process.crawl(ArdenhomesSpider)
+# process.crawl(HamlanSpider) +
+# process.crawl(HallmarkhomesSpider) +
+# process.crawl(ArdenhomesSpider) +
+# process.crawl(TrevorhomesSpider) +
 
 
 spiders = {
@@ -72,24 +74,26 @@ spiders = {
     'HamlanSpider': {'class': HamlanSpider, 'logo': HamlanSpider.logo},
     'HallmarkhomesSpider': {'class': HallmarkhomesSpider, 'logo': HallmarkhomesSpider.logo},
     'ArdenhomesSpider': {'class': ArdenhomesSpider, 'logo': ArdenhomesSpider.logo},
+    'TrevorhomesSpider': {'class': TrevorhomesSpider, 'logo': TrevorhomesSpider.logo},
     'AshfordhomesSpider': {'class': AshfordhomesSpider, 'logo': AshfordhomesSpider.logo}
 }
 
 
 def main(sName):
+    fileName = 'Result.csv'
     global spiders
     settings = get_project_settings()
     process = CrawlerProcess(settings)
     data = []
 
     if sName:
-        with open('Result.csv', 'r') as rFile:
+        with open(fileName, 'r') as rFile:
             for row in csv.reader(rFile):
                 if row[-2] != spiders[sName]['logo']:
                     data.append(row)
             rFile.close()
 
-        with open('Result.csv', 'w') as rFile:
+        with open(fileName, 'w') as rFile:
             writer = csv.writer(rFile)
             for row in data:
                 writer.writerow(row)
@@ -97,7 +101,7 @@ def main(sName):
 
         process.crawl(spiders[sName]['class'])
     else:
-        with open('Result.csv', 'w') as wFile:
+        with open(fileName, 'w') as wFile:
             writer = csv.DictWriter(wFile, FEED_EXPORT_FIELDS)
             writer.writeheader()
         for s in spiders:

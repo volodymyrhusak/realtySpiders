@@ -31,7 +31,6 @@ class FrenkenhomesSpider(CrawlSpider):
         # self.BuildType = response.url.split('/')[-1]
         hxs = Selector(response)
         links = hxs.xpath('//a[@class="home-feature-read-more viewdetails"]/@href').extract()
-        # print(links)
         for url in links:
             url = 'http://www.frenkenhomes.com.au' + url
             yield Request(url, callback=self.parseItem)

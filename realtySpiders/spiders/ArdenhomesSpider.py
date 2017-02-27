@@ -3,6 +3,7 @@ from scrapy.linkextractors.lxmlhtml import LxmlLinkExtractor
 from scrapy.selector import HtmlXPathSelector
 from realtySpiders.items import RealtyspidersItem
 from scrapy.crawler import CrawlerProcess
+from scrapy.http import Request
 from realtySpiders.spiders.RealtyLoader import RealtyLoader
 
 
@@ -12,11 +13,12 @@ class ArdenhomesSpider(CrawlSpider):
     start_urls = ['http://www.ardenhomes.com.au/']
     rules = (
 
-        Rule(LxmlLinkExtractor(allow=('/home-ranges'))),
-        Rule(LxmlLinkExtractor(allow=('/aspire/[\w-]+')),
-             callback='parseItem'),
-        Rule(LxmlLinkExtractor(allow=('/lumina/[\w-]+')),
-             callback='parseItem'),
+        Rule(LxmlLinkExtractor(allow=('/home-ranges')),
+             callback='parseHomeRanges'),
+        # Rule(LxmlLinkExtractor(allow=('/aspire/[\w-]+')),
+        #      callback='parseItem'),
+        # Rule(LxmlLinkExtractor(allow=('/lumina/[\w-]+')),
+        #      callback='parseItem'),
         Rule(LxmlLinkExtractor(allow=('/display-locations')),
              callback='parseLocations'),
         Rule(LxmlLinkExtractor(allow=('/display-homes-for-sale')),
@@ -25,6 +27,18 @@ class ArdenhomesSpider(CrawlSpider):
     oth = ('Sun Court 1','Dining/Living','Porch','Sun Court 2','Overall House Dimension','Bedroom 5',
            'First Floor','Sun Court','Ground Floor','Activity Area','Sun Court 3','Rumpus')
     logo = 'Arden'
+
+    def parseHomeRanges(self,response):
+        hxs = HtmlXPathSelector(response)
+        elems = hxs.xpath('//div[@class="field-content"]')
+        startUrl = 'http://www.ardenhomes.com.au/home-ranges'
+        for el in elems:
+            price = el.xpath('''.//div[@class="panel-body"]/h3/text()''').extract_first()
+            link = el.xpath('''.//a[@class="panel-link"]/@href''').extract_first()
+            # print('{}{}'.format(startUrl,link))
+            meta = {'BasePrice':price}
+            yield Request('{}{}'.format(self.start_urls[0],link), callback=self.parseItem, meta=meta)
+
 
     def parseLocations(self,response):
         referer = response.request.headers.get('Referer', None).decode("utf-8")
@@ -68,13 +82,14 @@ class ArdenhomesSpider(CrawlSpider):
 
 
     def parseItem(self, response):
+        print('parseItem')
         referer = response.request.headers.get('Referer', None).decode("utf-8")
         BuildType = self._getBuildType(referer)
         if not BuildType:
             return None
         hxs = HtmlXPathSelector(response)
-        with open('testURL', 'a') as file:
-            file.writelines('\n'.join(hxs.xpath('//ul[@class="measurements-list"]/li/span[1]/text()').extract()))
+        # with open('testURL', 'a') as file:
+        #     file.writelines('\n'.join(hxs.xpath('//ul[@class="measurements-list"]/li/span[1]/text()').extract()))
         inclusionsXpath = '''//div[@data-tab="inclusions"]/div/p/text()'''
         imgXpath = '//div[@data-tab="gallery/images"]/div/img[{}]/@src'
         descriptionXPath = '''//div[@class="tab-pane floorplans"][{}]/div[@class="clearfix"]/div
@@ -99,13 +114,12 @@ class ArdenhomesSpider(CrawlSpider):
             l.add_xpath('Region', descriptionXPath.format(i+1,'Region'))
             #
             l.add_xpath('Bedrooms', '//span[@class="bedroom"]/ancestor::li/text()')
-            l.add_xpath('Bathrooms', '//span[@class="bedroom"]/ancestor::li/text()')
-            l.add_xpath('Garage', '//span[@class="bedroom"]/ancestor::li/text()')
+            l.add_xpath('Bathrooms', '//span[@class="bathroom"]/ancestor::li/text()')
+            l.add_xpath('Garage', '//span[@class="garage"]/ancestor::li/text()')
             l.add_xpath('BrochureImage_pdf', '//a[@class="gt-after download-price-list"]/@href')
             l.add_xpath('InclusionsImage_pdf', '//div[@data-tab="inclusions"]/div/a/@href')
             l.add_xpath('OtherInclusions1', '//div[@class="tab-pane floorplans"][{}]/div/div/a/@dref'.format(i+1))
-            # l.add_xpath('BasePrice', ['/html/body/div[3]/div/div[1]/div/div[1]/h2/text()',
-            #                           '/html/body/div[3]/div/div[1]/h2/text()'])
+            l.add_value('BasePrice', response.meta['BasePrice'])
             l.add_xpath('FloorPlanImage1', '//div[@class="tab-pane floorplans"][{}]/div/div/img/@src'.format(i+1))
             l.add_xpath('Image1', imgXpath.format('1'))
             l.add_xpath('Image2', imgXpath.format('2'))
@@ -153,7 +167,7 @@ class ArdenhomesSpider(CrawlSpider):
             l.add_xpath('Study_Yes_No',
                         [descriptionXPath.format(i+1,'Study'), descriptionXPath.format(i+1,'Study/TV Area')])
             l.add_value('OtherInclusions', ', '.join(other))
-            #
+
 
             l.add_xpath('SturturalWarranty',
                         inclusionsXpath, **{'re': '.*guarantee.*|.*[Ww]arranty.*'})

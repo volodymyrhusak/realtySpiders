@@ -6,96 +6,108 @@ from scrapy.selector import HtmlXPathSelector
 from realtySpiders.items import RealtyspidersItem
 from scrapy.crawler import CrawlerProcess
 from realtySpiders.spiders.RealtyLoader import RealtyLoader
+from scrapy.http import FormRequest , Request
 
 
 class BentleyhomesSpider(CrawlSpider):
-    HD_1 = '''http://www.bentleyhomes.com.au/home-designs/search-home-designs/?
-                  hf_property_type_filter_2%5Bitems%5D%5B0%5D%5Bvalue%5D=273&
-                  hf_property_type_filter_2%5Bcount%5D=1&hf_property_price_filter_2%5Bitems%5D%5B0%5D%5
-                  Brange%5D=100000%3B800000&hf_property_price_filter_2%5Bcount%5D=1&hf_property_storeys_filter
-                  %5Bitems%5D%5B0%5D%5Bvalue%5D=1&hf_property_storeys_filter%5Bcount%5D=1&hf_property_area_filter
-                  %5Bitems%5D%5B0%5D%5Brange%5D=50%3B500&hf_property_area_filter%5Bcount%5D=1&submit=Search'''
-    HD_2 = '''http://www.bentleyhomes.com.au/home-designs/search-home-designs/
-                  ?hf_property_type_filter_2%5Bitems%5D%5B0%5D%5Bvalue%5D=273&hf_property_type_filter_2%
-                  5Bcount%5D=1&hf_property_price_filter_2%5Bitems%5D%5B0%5D%5Brange%5D=100000%3B800000&
-                  hf_property_price_filter_2%5Bcount%5D=1&hf_property_storeys_filter%5Bitems%5D%5B0%5D%5B
-                  value%5D=2&hf_property_storeys_filter%5Bcount%5D=1&hf_property_area_filter%
-                  5Bitems%5D%5B0%5D%5Brange%5D=50%3B500&hf_property_area_filter%5Bcount%5D=1&submit=Search'''
-    HL_1 = '''http://www.bentleyhomes.com.au/house-and-land/browse-our-hl-packages/
-                  ?hf_property_type_filter_3%5Bitems%5D%5B0%5D%5Bvalue%5D=275&hf_property_type_filter_3%5Bcount%5D=1
-                  &hf_property_price_filter_3%5Bitems%5D%5B0%5D%5Brange%5D=100000%3B800000&hf_property_price_filter_3%
-                  5Bcount%5D=1&hf_property_storeys_filter_1%5Bitems%5D%5B0%5D%5Bvalue%5D=1&hf_property_storeys_filter_1%
-                  5Bcount%5D=1&hf_property_area_filter_1%5Bitems%5D%5B0%5D%5Brange%5D=50%3B500&hf_property_area_filter_1%
-                  5Bcount%5D=1&submit=Search'''
-    HL_2 = '''http://www.bentleyhomes.com.au/house-and-land/browse-our-hl-packages/?
-                  hf_property_type_filter_3%5Bitems%5D%5B0%5D%5Bvalue%5D=275&hf_property_type_filter_3%5Bcount%5D=1&
-                  hf_property_price_filter_3%5Bitems%5D%5B0%5D%5Brange%5D=100000%3B800000&hf_property_price_filter_3%5
-                  Bcount%5D=1&hf_property_storeys_filter_1%5Bitems%5D%5B0%5D%5Bvalue%5D=2&hf_property_storeys_filter_1%
-                  5Bcount%5D=1&hf_property_area_filter_1%5Bitems%5D%5B0%5D%5Brange%5D=50%3B500&hf_property_area_filter_1
-                  %5Bcount%5D=1&submit=Search'''
+
     name = 'bentleyhomes'
     allowed_domains = ['www.bentleyhomes.com.au']
-    # start_urls = ['http://www.bentleyhomes.com.au/', HD_1, HD_2, HL_1, HL_2]
     start_urls = ['http://www.bentleyhomes.com.au/']
     rules = (
         Rule(LxmlLinkExtractor(allow=('http://www.bentleyhomes.com.au/home-designs/search-home-designs/$')),
-             follow=True),
+             follow=True, callback='parseForm'),
         Rule(LxmlLinkExtractor(allow=('http://www.bentleyhomes.com.au/house-and-land/browse-our-hl-packages/$')),
-             follow=True),
-        Rule(LxmlLinkExtractor(allow=('http://www.bentleyhomes.com.au/dual-occupancy/$')),
-             follow=True),
+             follow=True, callback='parseList'),
         Rule(LxmlLinkExtractor(allow=('http://www.bentleyhomes.com.au/displays-homes/ex-display-homes-for-sale/$')),
              follow=True),
-        Rule(LxmlLinkExtractor(allow=('http://www.bentleyhomes.com.au/displays-homes/view-displays-homes/$')),
-             follow=True),
-        Rule(LxmlLinkExtractor(allow=('http://www.bentleyhomes.com.au/house-and-land/completed-homes/$')),
-             follow=True),
-        Rule(LxmlLinkExtractor(allow=('http://www.bentleyhomes.com.au/properties/[\w-]+/$'),
-                               restrict_xpaths='//div[@class="block-content block-content-small-padding"]'),
-             callback='parseItem', follow=True),
 
     )
+    oth = ('Games','Studio','Games Room','Leisure','Rumpus','Rooms','Grand Living','Bedroom 5',
+           'Living','Retreat','M.P.R')
     logo = 'Bentley Homes'
+
+
+    def parseForm(self,response):
+        if response.url.find('home-designs') != -1:
+            callback = self.parseLinks
+        elif response.url.find('browse-our-hl-packages') != -1:
+            callback = self.parseList
+
+        for i in range(1,4):
+            formdata = {'storeys_filter': str(i),
+                        'submit': 'Search'}
+            yield FormRequest(response.url,
+                            formdata=formdata,
+                            meta={'Storey':str(i)},
+                            callback=callback)
+
+    def parseLinks(self, response):
+        links = LxmlLinkExtractor(allow=('http://www.bentleyhomes.com.au/properties/[\w-]+/$')).extract_links(response)
+        for link in links:
+            yield Request(link.url, callback=self.parseItem, meta=response.meta)
+
+    def parseList(self,response):
+        referer = response.request.headers.get('Referer', None).decode("utf-8")
+        hxs = HtmlXPathSelector(response)
+        hxsItemsList = hxs.xpath('//div[@class="property-item"]')
+        for hxsItem in hxsItemsList:
+            l = RealtyLoader(RealtyspidersItem(), hxsItem)
+            l.add_value('url', response.url)
+            l.add_value('BuildType', 'Browse our H&L packages')
+            l.add_value('BuilderLogo', self.logo)
+            l.add_xpath('Lot_BlockAddress', './/span[@class="street"]/text()')
+            l.add_xpath('Squares', './/span[@class="area"]/text()')
+            l.add_xpath('Bedrooms', '//li[@class="beds"]/text()')
+            l.add_xpath('Bathrooms', '//li[@class="baths"]/text()')
+            l.add_xpath('Garage', '//li[@class="garages"]/text()')
+            l.add_xpath('LivingArea', '//li[@class="storeys"]/text()')
+            l.add_xpath('BasePrice',
+                    './/div[@class="field-prefix" and text()="$"]/following-sibling::div[@class="field-value"]/text()')
+            l.add_xpath('HomeDesignMainImage', './/img/@src')
+            yield l.load_item()
 
     def parseItem(self, response):
         referer = response.request.headers.get('Referer', None).decode("utf-8")
         hxs = HtmlXPathSelector(response)
         # with open('testURL', 'a') as file:
+        #     file.write(str(response.meta)+ '\n')
         #     file.writelines('\n'.join(hxs.xpath('//div[@class="col-md-8"]/table/tbody/tr/td[1]/text()').extract()))
-        roomsXpath = '''//div[@class="col-md-8"]/table/tbody/tr/td[text()="{}"]/following-sibling::td/text()'''
+        roomsXpath = '''//div[@class="room_dimensions overview_table"]
+                        //tr/td[text()="Master Bedroom"]/following-sibling::td/text()'''
         overviewXpath = '''//table[@id="hf-property-overview"]/tr/td/div[text()="{}"]/ancestor::td/following-sibling::
                             td[@class="item-value"]/div/div[@class="field-value"]/text()'''
         imgXpath = '//div[@class=" flexslider_gallery image hf-property-gallery"]/div/ul/li[{}]/img/@src'
         descriptionXPath = '//div[@id="col-md-8"]/p/text()'
+        # data = hxs.xpath(roomsXpath).extract()
+        # with open('testURL','a') as file:
+        #     for i in data:
+        #         file.write(i+'\n')
+        other = []
+        for name in self.oth:
+            size = hxs.xpath(roomsXpath.format(name)).extract_first()
+            if size:
+                other.append('{}:{}'.format(name, size))
 
         l = RealtyLoader(RealtyspidersItem(), hxs)
         l.add_value('url', response.url)
         l.add_value('BuildType', self._getBuildType(referer))
-        # l.add_value('BuilderEmailAddress', 'info@truevaluehomes.com.au')
-        #
-        # try:
-        #     l.add_value('HomeDesignMainImage', self.itemsList[response.url])
-        # except KeyError:
-        #     pass
         l.add_value('BuilderLogo', self.logo)
+        l.add_xpath('DesignName', '//h3[@class="title-post"]/text()')
+        l.add_value('State', 'MELBOURNE')
+        l.add_xpath('Squares', '//div[@class="info-box1 "]/p[1]/text()')
+        l.add_xpath('Bedrooms', '//li[@class="beds"]/text()')
+        l.add_xpath('Bathrooms', '//li[@class="baths"]/text()')
+        l.add_xpath('Garage', '//li[@class="garages"]/text()')
+        l.add_xpath('BasePrice',
+                    '//div[@class="field-prefix" and text()="$"]/following-sibling::div[@class="field-value"]/text()')
 
-        if response.url.find('/lot') == -1:
-            l.add_xpath('DesignName', '//h1[@class="property-detail-title"]/text()', **{'re': '^\w+\s+\d+$'})
-        else:
-            l.add_xpath('DesignName', overviewXpath.format('Home Design'))
-            l.add_xpath('Region', '//h1[@class="property-detail-title"]/text()', **{'re': ',.*$'})
-            l.add_value('State', 'MELBOURNE')
+        l.add_value('Storey', self._getStorey(response.meta['Storey']))
 
-
-        l.add_xpath('Squares', overviewXpath.format('Area'))
-        l.add_xpath('Bedrooms', overviewXpath.format('Beds'))
-        l.add_xpath('Bathrooms', overviewXpath.format('Baths'))
-        l.add_xpath('Garage', overviewXpath.format('Garages'))
-        l.add_xpath('Storey', overviewXpath.format('Storeys'))
-        l.add_xpath('LandSize', overviewXpath.format('Land Size'))
-        l.add_xpath('BasePrice', '//*[@id="main-content"]/div/div[1]/div/div/div[2]/div/div[2]/text()')
-        l.add_xpath('BrochureImage_pdf', '//a[text()="Download Flyer"]/@href')
-        l.add_xpath('InclusionsImage_pdf', '//a[text()="Specifications and Inclusions"]/@href')
+        l.add_xpath('HouseWidth', '//div[text()="MIN. BLOCK WIDTH"]/text()[2]')
+        l.add_xpath('HouseLength', '//div[text()="\n                        MIN. BLOCK LENGTH"]/text()[2]')
+        l.add_xpath('BrochureImage_pdf', '//a[text()="Brochure"]/@href')
+        l.add_xpath('InclusionsImage_pdf', '//a[text()="Inclusions"]/@href')
         l.add_xpath('FloorPlanImage1', '//a[@class="floor-plan fancybox"]/img/@src')
         l.add_xpath('HomeDesignMainImage', imgXpath.format('1'))
         l.add_xpath('Image1', imgXpath.format('2'))
@@ -114,17 +126,20 @@ class BentleyhomesSpider(CrawlSpider):
         l.add_xpath('Image14', imgXpath.format('15'))
         l.add_xpath('Image15', imgXpath.format('16'))
 
+
+
+
         l.add_xpath('MasterBedroomDimension', roomsXpath.format('Master Bedroom'))
         l.add_xpath('Bedroom2Dimension', roomsXpath.format('Bedroom 2'))
         l.add_xpath('Bedroom3Dimension', roomsXpath.format('Bedroom 3'))
         l.add_xpath('Bedroom4Dimension', roomsXpath.format('Bedroom 4'))
-        l.add_xpath('StudyDimension', roomsXpath.format('Study'))
+        l.add_xpath('StudyDimension', [roomsXpath.format('Study'),roomsXpath.format('Study nook')])
         l.add_xpath('Meals_DiningDimension', roomsXpath.format('Meals'))
         l.add_xpath('FamilyDimension', roomsXpath.format('Family'))
         l.add_xpath('AlfrescoDimension', roomsXpath.format('Alfresco'))
-        l.add_xpath('HouseWidth', roomsXpath.format('Overall Width'))
-        l.add_xpath('HouseLength', roomsXpath.format('Overall Length'))
-
+        l.add_xpath('LoungeDimension', roomsXpath.format('Lounge'))
+        l.add_xpath('TheatreDimension', roomsXpath.format('Theatre'))
+        l.add_value('OtherInclusions', ', '.join(other))
 
         # Block Yes No
         l.add_xpath('TheatreRoom_Yes_No',
@@ -222,12 +237,7 @@ class BentleyhomesSpider(CrawlSpider):
         # #             descriptionXPath, **{'re': '[\w\s]+[Ss]ecurity System'})
         return l.load_item()
 
-    def parseContent(self, response):
-        hxs = HtmlXPathSelector(response)
-        content = hxs.xpath('//div[@class="block-content block-content-small-padding"]')
-        links = LinkExtractor(allow=('$')).extract_links(content)
-        with open('testURL', 'a') as file:
-            file.writelines(links)
+
 
     def _getBuildType(self, url):
 
@@ -246,6 +256,13 @@ class BentleyhomesSpider(CrawlSpider):
             # elif url.find('ex-display-homes-for-sale') != -1:
             #     return 'Display Homes for Sale'
 
+    def _getStorey(self, data):
+        if data == '1':
+            return 'Single'
+        elif data == '2':
+            return 'Double'
+        elif data == '3':
+            return 'Split livel'
 
 if __name__ == '__main__':
     process = CrawlerProcess()

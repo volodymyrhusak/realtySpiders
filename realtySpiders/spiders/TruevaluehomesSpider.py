@@ -46,21 +46,6 @@ class TruevaluehomesSpider(CrawlSpider):
             yield l.load_item()
 
 
-
-
-            # item = RealtyspidersItem()
-            # with open('data.html', 'a') as file:
-            #     file.write(hxsItems.extract())
-            #     file.write('-' * 100 + '\n')
-            # # print(hxsItems is hxs)
-            # print(type(hxsItems.root.xpath))
-            # print(hxsItems.namespaces)
-            # item['DesignName'] = hxsItems.xpath('//div[@class="packages-cat-title"]/text()').extract()
-            # item['BasePrice'] = hxsItems.select('.//div[@class="price"]/strong/text()').extract()
-            # print(item['BasePrice'])
-            # print(hxsItems.extract())
-            # print(hxsItems.xpath('//div[@class="price"]/strong/text()'))
-
     def parseItem(self, response):
         referer = response.request.headers.get('Referer', None).decode("utf-8")
         if self._chakURL(response.url):

@@ -33,7 +33,6 @@ class AshfordhomesSpider(CrawlSpider):
 
     def parseForm(self, response):
         for id in self.features.keys():
-            # print(id)
             name = self.features[id]['name']
             formdata = {name: id}
             yield FormRequest.from_response(response,
@@ -128,9 +127,9 @@ class AshfordhomesSpider(CrawlSpider):
 
     def getFeatures(self, url, features):
         if url in self.features[features]['urls']:
-            with open('testURL', 'a') as file:
-                file.write(str(self.features[features]['urls']) + '\n')
-                file.write(url + '\n'*2)
+            # with open('testURL', 'a') as file:
+            #     file.write(str(self.features[features]['urls']) + '\n')
+            #     file.write(url + '\n'*2)
             return 'Yes'
         return None
 

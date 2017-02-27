@@ -12,24 +12,24 @@ from realtySpiders.spiders.RealtyLoader import RealtyLoader
 class BusbyhomesSpider(CrawlSpider):
     name = 'busbyhomes'
     allowed_domains = ['busbyhomes.com.au']
-    start_urls = ['http://busbyhomes.com.au/']
+    start_urls = ['https://busbyhomes.com.au/']
     rules = (
-        Rule(LxmlLinkExtractor(allow=('http://busbyhomes.com.au/designer-homes/$')),
+        Rule(LxmlLinkExtractor(allow=('https://busbyhomes.com.au/designer-homes/$')),
              callback='pasreLinks',follow=True),
-        Rule(LxmlLinkExtractor(allow=('http://busbyhomes.com.au/new-homes/$')),
+        Rule(LxmlLinkExtractor(allow=('https://busbyhomes.com.au/new-homes/$')),
              callback='pasreLinks', follow=True),
-        Rule(LxmlLinkExtractor(allow=('http://busbyhomes.com.au/recent-homes/$')),
+        Rule(LxmlLinkExtractor(allow=('https://busbyhomes.com.au/recent-homes/$')),
              callback='pasreLinks', follow=True),
 
         # Rule(LxmlLinkExtractor(allow=('http://www.bentleyhomes.com.au/properties/[\w-]+/$'),
         #                        restrict_xpaths='//div[@class="block-content block-content-small-padding"]'),
         #      callback='parseItem', follow=True),
     )
-    logo ='Bentley Homes'
+    logo ='Busby Homes'
 
     def pasreLinks(self,response):
         referer = response.request.headers.get('Referer', None).decode("utf-8")
-        links = LxmlLinkExtractor(allow=('http://busbyhomes.com.au/portfolio-view/[\w-]+/$')).extract_links(response)
+        links = LxmlLinkExtractor(allow=('https://busbyhomes.com.au/portfolio-view/[\w-]+/$')).extract_links(response)
         for link in links:
             yield Request(link.url, callback=self.parseItem, dont_filter=True)
 

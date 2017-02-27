@@ -34,8 +34,9 @@ class HallmarkhomesSpider(CrawlSpider):
         Rule(LxmlLinkExtractor(allow=('http://hallmarkhomes.com.au/home-designs/[\w-]+/$')),
              callback='parseItem'),
     )
-    oth = ('Activity', 'Second Alfresco', 'Patio')
+    oth = ('Activity', 'Second Alfresco', 'Patio','Living')
     logo = 'Hallmark Homes'
+    pdfUrl = 'http://hallmarkhomes.com.au/wp-admin/admin-ajax.php?action=download_info_pack&homeID='
 
     def parseItem(self, response):
         referer = response.request.headers.get('Referer', None).decode("utf-8")
@@ -44,6 +45,7 @@ class HallmarkhomesSpider(CrawlSpider):
         imgXpath = '//div[@class="cycle-slideshow"]/img[{}]/@src'
         descriptionXPath = '''//div[@class="col-sm-4 col-hd-house-dimensions hd-house-dimensions"]
                               //tr/td[text()="{}"]/following-sibling::td/text()'''
+        idPage = hxs.xpath('//a[text()="Download info pack"]/@data-home-id').extract_first()
         BuildType = self._getBuildType(referer)
         other = []
         for name in self.oth:
@@ -70,9 +72,12 @@ class HallmarkhomesSpider(CrawlSpider):
         l.add_xpath('Bedrooms', '//span[@class="hh-icon-beds"]/ancestor::li/text()')
         l.add_xpath('Bathrooms', '//span[@class="hh-icon-baths"]/ancestor::li/text()')
         l.add_xpath('Garage', '//span[@class="hh-icon-car"]/ancestor::li/text()')
+        l.add_xpath('LivingArea', '//span[@class="hh-icon-living"]/ancestor::li/text()')
         l.add_xpath('BasePrice', ['/html/body/div[3]/div/div[1]/div/div[1]/h2/text()',
                                   '/html/body/div[3]/div/div[1]/h2/text()'])
         l.add_xpath('FloorPlanImage1', '//div[@class="js-fp-panzoom js-fp-panzoom-reset"]/img/@src')
+        if idPage:
+            l.add_value('BrochureImage_pdf', '{}{}'.format(self.pdfUrl,idPage))
         l.add_xpath('Image1', imgXpath.format('1'))
         l.add_xpath('Image2', imgXpath.format('2'))
         l.add_xpath('Image3', imgXpath.format('3'))
@@ -106,7 +111,6 @@ class HallmarkhomesSpider(CrawlSpider):
         l.add_xpath('KitchenDimension', descriptionXPath.format('Kitchen'))
         l.add_xpath('Squares', descriptionXPath.format('Floor Area sqm'))
         l.add_xpath('LandSize', descriptionXPath.format('Land Size sqm'))
-        l.add_xpath('LivingArea', descriptionXPath.format('Living'))
 
         # # Block Yes No
         l.add_xpath('TheatreRoom_Yes_No',
